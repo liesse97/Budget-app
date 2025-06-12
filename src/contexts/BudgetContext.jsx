@@ -62,16 +62,17 @@ function addBudget({names,max}){
 
 function deleteBudget({id}){
     //TODO: Deal with uncategorized expense
-    /*setBudgets(prevBudgets => {
-    return prevBudgets.filter (budget => budget.id !== id)
-    })*/
 
 
+       setBudgets(prevBudgets => {
        setExpenses(prevExpenses => {
         return prevExpenses.map(expense => {
             if(expense.budgetId !== id) return expense
             return { ...expense, budgetId:UNCATEGORIZED_BUDGET_ID }
        })
+    })
+ 
+    return prevBudgets.filter (budget => budget.id !== id)
     })
 }
 
