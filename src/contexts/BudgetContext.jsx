@@ -1,14 +1,17 @@
 import React, {useContext , useState} from 'react'
 //function to call to create a new unique ID
 import {v4 as uuidV4 } from 'uuid'
+import useLocalStorage from '../hooks/useLocalStorage'
 
 export const BudgetContext = React.createContext()
+
+
 
 export const useBudgets = () => {
 return useContext (BudgetContext)
 }
 
-
+export const UNCATEGORIZED_BUDGET_ID= 'Uncategorized'
 /*
 Budget look
 {
@@ -29,8 +32,12 @@ description:
 
 export const BudgetsProvider = ({children}) => {
 //Store information whhen tex reading the page and come back
-const [budgets,setBudgets] = useState([])
-const [expenses,setExpenses] = useState([])
+const [budgets,setBudgets] = useLocalStorage('budgets', [])
+const [expenses,setExpenses] = useLocalStorage('expenses', [])
+
+//console.log(JSON.stringify(budgets))
+//console.log(JSON.stringify(expenses))
+
 
 function getBudgetExpense(budgetId){
     return expenses.filter (expense => expense.budgetId === budgetId)
@@ -38,7 +45,7 @@ function getBudgetExpense(budgetId){
 
 function addExpense({description,amount,budgetId}){
 setExpenses(prevBudgets => {
-    return [...prevBudgets,{ id: uuidV4(),description,amount,budgetId}]
+    return [ ...prevBudgets,{ id: uuidV4(),description,amount,budgetId}]
 })
 }
 
@@ -55,8 +62,16 @@ function addBudget({names,max}){
 
 function deleteBudget({id}){
     //TODO: Deal with uncategorized expense
-    setBudgets(prevBudgets => {
+    /*setBudgets(prevBudgets => {
     return prevBudgets.filter (budget => budget.id !== id)
+    })*/
+
+
+       setExpenses(prevExpenses => {
+        return prevExpenses.map(expense => {
+            if(expense.budgetId !== id) return expense
+            return { ...expense, budgetId:UNCATEGORIZED_BUDGET_ID }
+       })
     })
 }
 
